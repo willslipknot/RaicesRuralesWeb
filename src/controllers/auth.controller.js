@@ -1,6 +1,8 @@
 import User from '../models/user.models.js';
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
+import {createAccessToken} from '../libs/jwt.js'
+
 
 export const register = async (req, res) => {
   const { nombre, apellido, telefono, correo, username, password } = req.body;
@@ -31,11 +33,52 @@ export const register = async (req, res) => {
     });
 
     console.log("Usuario creado");
-    res.send('Registrando');
+    
+    const token= await createAccessToken({id:newUser._id});
+    res.cookie('token', token);
+    res.json({message:"Usuario creado correctamente"});
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al registrar usuario." });
   }
 };
 
-export const login = (req, res) => res.send("Inicio de sesión");
+export const login = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+
+    const existingUser = await User.findOne({
+      where: {
+        username: username
+      }
+    });
+
+    if (!existingUser) {
+      console.log("Usuario no encontrado.");
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
+    if (!passwordMatch) {
+      console.log("Contraseña incorrecta.");
+      return res.status(401).json({ error: "Contraseña incorrecta." });
+    }
+
+    const token= await createAccessToken({id:existingUser._id});
+    res.cookie('token', token);
+    res.json({
+        nombre: existingUser.nombre,
+        apellido:existingUser.apellido,
+        correo:existingUser.correo,
+        telefono:existingUser.telefono,
+        });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al iniciar sesión." });
+  }
+};
+
