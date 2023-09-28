@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import authRoutes from './routes/auth.routes.js';
+import taskRoutes from './routes/tasks.routes.js'
 import cookieParser from 'cookie-parser'
 
 
@@ -9,6 +10,7 @@ app.use(morgan('dev'));
 app.use(express.json()); 
 app.use(cookieParser());
 app.use(authRoutes);
+app.use(taskRoutes);
 
 
 export default app;
