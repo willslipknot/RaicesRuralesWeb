@@ -1,40 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../context/authContext.jsx';
+import { useNavigate } from 'react-router-dom';
 import '../assets/css/NavBar.css';
 
 function NavBar() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isFullFormVisible, setIsFullFormVisible] = useState(false);
     const [showInitialFields, setShowInitialFields] = useState(true);
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
+
+    const { signup, isAuthenticated, errors: erroresRegistro } = useAuth();
+    const { signin, errors: erroresLogin } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/registrado');
+        }
+
+        if (isLoginOpen) {
+            reset();
+        }
+    }, [isAuthenticated, isLoginOpen, reset]);
 
     const handleCheckboxChange = () => {
         setIsLoginOpen(!isLoginOpen);
         setIsFullFormVisible(false);
-        setShowInitialFields(true); // Mostrar los campos de nombre de usuario y contraseña al abrir el menú Login
+        setShowInitialFields(true);
+        reset();
     };
 
     const handleCancel = () => {
         setIsLoginOpen(false);
         setIsFullFormVisible(false);
-        setShowInitialFields(true); // Mostrar los campos de nombre de usuario y contraseña al cancelar
+        setShowInitialFields(true);
+        reset();
     };
 
     const handleLoginSubmit = (values) => {
-        console.log('Login:', values);
-        setIsLoginOpen(false);
-        setIsFullFormVisible(false);
-        // Aquí puedes manejar la lógica para enviar los datos del formulario de login
+        signin(values);
+       
+
     };
 
     const handleRegisterClick = () => {
         setIsFullFormVisible(true);
-        setShowInitialFields(false); // Ocultar los campos de nombre de usuario y contraseña al hacer clic en "Registrar"
+        setShowInitialFields(false);
+        reset();
     };
 
-    const handleRegisterSubmit = (values) => {
-        console.log('Registro:', values);
-        // Aquí puedes manejar la lógica para enviar los datos del formulario de registro
+    const handleRegisterSubmit = async (values) => {
+        signup(values);
+        reset();
     };
 
     return (
@@ -54,52 +72,116 @@ function NavBar() {
                         </label>
                         {isLoginOpen && (
                             <ul className="submenu">
-                                <form className='login' onSubmit={handleSubmit(handleRegisterSubmit)}>
-                                    {showInitialFields && (
+                                {showInitialFields && (
+                                    <form className='login' onSubmit={handleSubmit(handleLoginSubmit)} >
                                         <div>
                                             <div className="form-group">
                                                 <label htmlFor="username"><b className='formulario'>Nombre Usuario</b></label>
-                                                <input type="text" />
+                                                <input type="text" {...register('username', { required: true })} />
+                                                {
+                                                        errors.username && (
+                                                            <p className='text-red-500'>
+                                                                Nombre de usuario es requerido
+                                                            </p>
+                                                        )
+                                                    }
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="password"><b className='formulario'>Contraseña</b></label>
-                                                <input type="password" />
+                                                <input type="password" {...register('password', { required: true })} />
+                                                {
+                                                        errors.password && (
+                                                            <p className='text-red-500'>
+                                                                Contraseña es requerida
+                                                            </p>
+                                                        )
+                                                        
+                                                    }
                                             </div>
+                                            <div className="form-group">
+                                                <button className="button" type='submit'><b className='botones'>Entrar</b></button>&nbsp;&nbsp;&nbsp;
+                                                <button onClick={handleRegisterClick} className="button"><b className='botones'>Registrar</b></button>
+                                            </div>
+                                            {
+                                                erroresLogin.map((error, i) => (
+                                                   
+                                                    <div className='bg-red-500 p-0 text-white' key={i}>
+                                                        {error}
+                                                    </div>
+                                                ))
+                                            }
+                                                    
                                         </div>
-                                    )}
-                                    {!isFullFormVisible && (
-                                        <div className="form-group">
-                                            <button className="button" type='submit'><b className='botones'>Entrar</b></button>&nbsp;&nbsp;&nbsp;
-                                            <button onClick={handleRegisterClick} className="button"><b className='botones'>Registrar</b></button>
-                                        </div>
-                                    )}
-                                    {isFullFormVisible && (
+                                    </form>
+                                )}
+                                {!isFullFormVisible && (
+                                    <div></div>
+                                )}
+
+                                {isFullFormVisible && (
+                                    <form className='login' onSubmit={handleSubmit(handleRegisterSubmit)} >
                                         <div>
                                             <div>
                                                 <div className="form-group">
                                                     <label htmlFor="username"><b className='formulario'>Nombre Usuario</b></label>
-                                                    <input type="text" {...register('username', {required:true})} />
+                                                    <input type="text" {...register('username', { required: true })} />
+                                                    {
+                                                        errors.username && (
+                                                            <p className='text-red-500'>
+                                                                Nombre de usuario es requerido
+                                                            </p>
+                                                        )
+                                                    }
                                                 </div>
                                                 <div className="form-group">
                                                     <label htmlFor="password"><b className='formulario'>Contraseña</b></label>
-                                                    <input type="password" {...register('password', {required:true})} />
+                                                    <input type="password" {...register('password', { required: true })} />
+                                                    {
+                                                        errors.password && (
+                                                            <p className='text-red-500'>
+                                                                Contraseña es requerida
+                                                            </p>
+                                                        )
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="telefono"><b className='formulario'>Telefono</b></label>
-                                                <input type="phone" {...register('telefono',  {required:true})} />
+                                                <input type="phone" {...register('telefono', { required: true })} />
+                                                {
+                                                    errors.telefono && (
+                                                        <p className='text-red-500'>
+                                                            Telefono es requerido
+                                                        </p>
+                                                    )
+                                                }
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="correo"><b className='formulario'>Correo</b></label>
-                                                <input type="email" {...register('correo',  {required:true})} />
+                                                <input type="email" {...register('correo', { required: true })} />
+                                                {
+                                                    errors.correo && (
+                                                        <p className='text-red-500'>
+                                                            Correo es requerido
+                                                        </p>
+                                                    )
+                                                }
                                             </div>
                                             <div className="form-group">
                                                 <button className="button" type='submit'><b className='botones'>Registrar</b></button>&nbsp;&nbsp;&nbsp;
                                                 <button onClick={handleCancel} className="button"><b className='botones'>Cancelar</b></button>
                                             </div>
-                                        </div>
-                                    )}
-                                </form>
+                                            {
+                                                erroresRegistro.map((error, i) => (
+                                                    <div className='bg-red-500 p-0 text-white' key={i}>
+                                                        {error}
+                                                    </div>
+                                                ))
+                                            }
+
+                                        </div></form>
+                                )}
+
                             </ul>
                         )}
                     </li>

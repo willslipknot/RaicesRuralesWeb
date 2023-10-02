@@ -18,8 +18,7 @@ export const register = async (req, res) => {
     });
 
     if (existingUser) {
-      console.log("Ya existe un usuario con el mismo nombre de usuario o correo electrónico.");
-      return res.status(400).json({ error: "Ya existe un usuario con el mismo nombre de usuario o correo electrónico." });
+      return res.status(400).json(["Ya existe un usuario con el mismo username o correo electrónico."]);
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -40,7 +39,7 @@ export const register = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al registrar usuario." });
+    res.status(500).json(["Error al registrar usuario." ]);
   }
 };
 
@@ -56,15 +55,14 @@ export const login = async (req, res) => {
     });
 
     if (!existingUser) {
-      console.log("Usuario no encontrado.");
-      return res.status(404).json({ error: "Usuario no encontrado." });
+      return res.status(404).json(["Usuario no encontrado."]);
     }
 
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
     if (!passwordMatch) {
       console.log("Contraseña incorrecta.");
-      return res.status(401).json({ error: "Contraseña incorrecta." });
+      return res.status(401).json(["Contraseña incorrecta."]);
     }
 
     const token= await createAccessToken({id:existingUser.id});
@@ -78,7 +76,7 @@ export const login = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al iniciar sesión." });
+    res.status(500).json(["Error al iniciar sesión."]);
   }
 };
 

@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
+import { AuthProvider } from '../src/context/authContext.jsx';
 
 function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleCheckboxChange = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   return (
-
-    <div className="App">
-    <NavBar isMenuOpen={isMenuOpen} onCheckboxChange={handleCheckboxChange} />
- 
-    </div>
-    
-
-
+    <Router>
+      <AuthProvider>
+        <NavBar />
+      </AuthProvider>
+    </Router>
   );
 }
 
-export default App
-
+export default App;
