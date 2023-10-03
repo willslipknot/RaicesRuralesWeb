@@ -1,7 +1,9 @@
 import User from '../models/user.models.js';
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import {createAccessToken} from '../libs/jwt.js'
+import { createAccessToken } from '../libs/jwt.js'
+import jwt  from 'jsonwebtoken';
+import { TOKEN_SECRET } from '../config.js';
 
 
 export const register = async (req, res) => {
@@ -32,14 +34,13 @@ export const register = async (req, res) => {
     });
 
     console.log("Usuario creado");
-    
-    const token= await createAccessToken({id:newUser.id});
-    res.cookie('token', token);
-    res.json({message:"Usuario creado correctamente"});
+
+    const token = await createAccessToken({ id: newUser.id });
+    res.json({ message: "Usuario creado correctamente" });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json(["Error al registrar usuario." ]);
+    res.status(500).json(["Error al registrar usuario."]);
   }
 };
 
@@ -65,14 +66,15 @@ export const login = async (req, res) => {
       return res.status(401).json(["Contraseña incorrecta."]);
     }
 
-    const token= await createAccessToken({id:existingUser.id});
+    const token = await createAccessToken({ id: existingUser.id });
     res.cookie('token', token);
     res.json({
-        nombre: existingUser.nombre,
-        apellido:existingUser.apellido,
-        correo:existingUser.correo,
-        telefono:existingUser.telefono,
-        });
+      nombre: existingUser.nombre,
+      apellido: existingUser.apellido,
+      correo: existingUser.correo,
+      telefono: existingUser.telefono,
+      usernam: existingUser.username,
+    });
 
   } catch (error) {
     console.error(error);
@@ -80,11 +82,11 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) =>{
-    res.cookie('token', "", {
-      expires:new Date(0)
-    })
-    return res.sendStatus(200)
+export const logout = async (req, res) => {
+  res.cookie('token', "", {
+    expires: new Date(0)
+  })
+  return res.sendStatus(200)
 
 };
 
@@ -108,4 +110,27 @@ export const profile = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
+};
+
+export const verifyToken = async (req, res) => {
+  const {token} = req.cookies
+  if (!token) return res.status(401).json({ message: "Sin autorizacion" });
+
+  jwt.verify(token, TOKEN_SECRET, async (err, user) => {
+    if (err) return res.status(401).json({ message: "Sin autorizacion" });
+
+    const userFound = await User.findByPk(user.id)
+    if (!userFound) return res.status(401).json({ message: "Sin autorizacion" });
+
+    return res.json({
+      id: userFound.id,
+      username: userFound.username,
+      correo: userFound.correo,
+      telefono: userFound.telefono,
+      nombre: userFound.nombre,
+      apellido: userFound.apellido,
+      userna: userFound.username
+    })
+
+  })
 };
