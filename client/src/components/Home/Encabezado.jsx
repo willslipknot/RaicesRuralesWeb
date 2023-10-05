@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import imagen1 from '../../assets/images/encabezado.jpg'
-import imagen2 from "../../assets/images/encabezado2.jpg"
-import imagen3 from "../../assets/images/encabezado3.jpg"
+import imagen2 from "../../assets/images/encabezado2.jpeg"
+import imagen3 from "../../assets/images/encabezado3.jpeg"
 import "../../assets/css/Encabezado.css" 
 
 class Encabezado extends Component {
@@ -11,8 +11,7 @@ class Encabezado extends Component {
                 <div className="encabezado-container" >
                     <img className= 'imagen_p1' src={imagen1} alt=" " />
                     <img className= 'imagen_p3' src={imagen3} alt=" " />
-                    <img className= 'imagen_p2' src={imagen2} alt=" " />
-                    
+                    <img className= 'imagen_p2' src={imagen2} alt=" " />   
                 </div>
                 <div className="texto_superpuesto">
                     <h1>Raices Rurales</h1>

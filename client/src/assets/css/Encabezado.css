@@ -8,7 +8,7 @@
     width: 0px;
     flex-grow: 1;
     object-fit: cover;
-    filter:brightness(35%);
+    filter:brightness(40%);
     transition: .7s ease;
 }
 .encabezado-container img:hover {
