@@ -2,28 +2,22 @@ import React, { useEffect, useState } from 'react';
 import NavBar from '../components/Home/NavBar.jsx';
 import { useAuth } from '../context/authContext.jsx';
 import '../assets/css/Profile.css';
+import { useForm, Controller } from 'react-hook-form';
 
 function Profile() {
-    const { user } = useAuth();
-    const [formValues, setFormValues] = useState({
-        username: '',
-        email: '',
-        telefono: '',
-        nombre: '',
-        apellido: '',
-    });
+    const { user, updateUser } = useAuth();
+    const { handleSubmit, control, reset } = useForm();
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
-        // Al cargar el componente o cuando el usuario cambie, llenar el estado del formulario con los datos del usuario
-        setFormValues({
-            username: user.usernam,
-            email: user.correo,
-            telefono: user.telefono,
-            nombre: user.nombre,
-            apellido: user.apellido,
+        reset({
+            username: user.username || '',
+            email: user.correo || '',
+            telefono: user.telefono || '',
+            nombre: user.nombre || '',
+            apellido: user.apellido || '',
         });
-    }, [user]);
+    }, [user, reset]);
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -31,14 +25,17 @@ function Profile() {
 
     const handleCancelClick = () => {
         setIsEditing(false);
+        reset();
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormValues({
-            ...formValues,
-            [name]: value,
-        });
+    const onSubmit = async (data) => {
+        try {
+            console.log(data)
+            await updateUser(user.id, data);
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error al actualizar el perfil:', error);
+        }
     };
 
     return (
@@ -46,67 +43,56 @@ function Profile() {
             <NavBar /><br /><br /><br /><br />
             <div className="profile-form">
                 <h1>Perfil de Usuario</h1><br></br>
-                <form className='perfil'>
+                <form onSubmit={handleSubmit(onSubmit)} className='perfil'>
                     <div className="form-group">
                         <label htmlFor="username">Nombre de Usuario</label>
-                        <input
-                            type="text"
-                            id="username"
+                        <Controller
                             name="username"
-                            value={formValues.username}
-                            readOnly={!isEditing}
-                            onChange={handleInputChange}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => <input type="text" {...field} readOnly={!isEditing} />}
                         />
                     </div>
                     <div className="form-group">
                         <label htmlFor="email">Correo Electrónico</label>
-                        <input
-                            type="email"
-                            id="email"
+                        <Controller
                             name="email"
-                            value={formValues.email}
-                            readOnly={!isEditing}
-                            onChange={handleInputChange}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => <input type="email" {...field} readOnly={!isEditing} />}
                         />
                     </div>
                     <div className="form-group">
                         <label htmlFor="telefono">Teléfono</label>
-                        <input
-                            type="text"
-                            id="telefono"
+                        <Controller
                             name="telefono"
-                            value={formValues.telefono}
-                            readOnly={!isEditing}
-                            onChange={handleInputChange}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => <input type="text" {...field} readOnly={!isEditing} />}
                         />
                     </div>
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre</label>
-                        <input
-                            type="text"
-                            id="nombre"
+                        <Controller
                             name="nombre"
-                            value={formValues.nombre}
-                            readOnly={!isEditing}
-                            onChange={handleInputChange}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => <input type="text" {...field} readOnly={!isEditing} />}
                         />
                     </div>
                     <div className="form-group">
                         <label htmlFor="apellido">Apellido</label>
-                        <input
-                            type="text"
-                            id="apellido"
+                        <Controller
                             name="apellido"
-                            value={formValues.apellido}
-                            readOnly={!isEditing}
-                            onChange={handleInputChange}
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => <input type="text" {...field} readOnly={!isEditing} />}
                         />
                     </div>
                     {isEditing ? (
                         <div className="form-group">
                             <button type="submit">Actualizar</button>
                             <button type="button" onClick={handleCancelClick}>Cancelar</button>
-                            
                         </div>
                     ) : (
                         <button type="button" onClick={handleEditClick}>Editar</button>

@@ -31,14 +31,32 @@ export const createAct = async (req, res) => {
 }
 
 export const deleteAct = async (req, res) => {
-    const actividadFound = await Actividad.findByPkAndDelete(req.params.id)
-    if (!actividadFound) return res.status(404).json(["No existe la actividad entonces no se elimino nada"])
-    res.json(actividadFound)
+    try {
+        const actividadFound = await Actividad.findByPk(req.params.id);
+        if (!actividadFound) {
+            return res.status(405).json(["No existe la actividad, por lo que no se eliminó nada"]);
+        }
 
-}
+        await actividadFound.destroy();
+        res.json({ message: "Actividad eliminada exitosamente" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json(["Error interno del servidor"]);
+    }
+};
 
 export const putAct = async (req, res) => {
-    const actividadFound = await Actividad.findByPkAndUpdate(req.params.id, req.body, { new: true })
-    if (!actividadFound) return res.status(404).json(["No se actualizo nada"])
-    res.json(actividadFound)
-}
+    try {
+        const actividadFound = await Actividad.findByPk(req.params.id);
+        if (!actividadFound) {
+            return res.status(404).json(["No se encontró la actividad, por lo que no se actualizó nada"]);
+        }
+
+        await actividadFound.update(req.body);
+        const updatedActividad = await Actividad.findByPk(req.params.id); 
+        res.json(updatedActividad);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json(["Error interno del servidor"]);
+    }
+};

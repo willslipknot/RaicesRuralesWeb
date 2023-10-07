@@ -9,9 +9,9 @@ router.get('/actividad/:id',authRequire, getAct);
 
 router.post('/actividades',authRequire, createAct);
 
-router.delete('/actividadD/:id', authRequire, deleteAct);
+router.delete('/actividad/:id', authRequire, deleteAct);
 
-router.put('/actividadU/:id', authRequire, putAct);
+router.put('/actividad/:id', authRequire, putAct);
 
 
 

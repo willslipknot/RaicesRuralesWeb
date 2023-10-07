@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../context/authContext.jsx';
 import { useNavigate } from 'react-router-dom';
+
+
 import '../../assets/css/NavBar.css';
 
 function NavBar() {
@@ -15,12 +17,10 @@ function NavBar() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (isAuthenticated) navigate('/Profile');
-
-        if (isLoginOpen) {
+        if (isLoginOpen ) {
             reset();
         }
-    }, [isAuthenticated, isLoginOpen, reset]);
+    }, [isLoginOpen, reset]);
 
     const handleCheckboxChange = () => {
         setIsLoginOpen(!isLoginOpen);
@@ -52,38 +52,49 @@ function NavBar() {
         reset();
     };
 
+    const handleLogoClick = () => {
+        if (isAuthenticated) {
+            navigate('/HomeUser');
+        } else {
+            navigate('/');
+        }
+    };
+
     return (
         <div className="nav">
             <nav className="navbar">
                 <ul className="navLis">
-                    <div className='logo' />
-                    <li><a href="#"><b className='menu'>Inicio</b></a></li>
-                    <li><a href="#"><b className='menu'>Rutas</b></a></li>
-                    <li><a href='#'><b className='menu'>Contactos</b></a></li>
+                <div className='logo' onClick={handleLogoClick} />
                     {isAuthenticated ?
                         (
-                            <> <li>
-                                <label className='labelcheck' htmlFor="menuCheckbox">
-                                    <b className='menu'>
-                                        <input type="checkbox" className='check' id="menuCheckbox" onChange={handleCheckboxChange} />
-                                        {user.usernam}
+                            <>
+                                <li><a href="Actividades"><b className='menu'>Actividades</b></a></li>
+                                <li><a href='#'><b className='menu'>Conductores</b></a></li>
+                                <li><a href="Profile"><b className='menu'>Perfil</b></a></li>
+                                <li>
+                                    <label className='labelcheck' htmlFor="menuCheckbox">
+                                        <b className='menu'>
+                                            <input type="checkbox" className='check' id="menuCheckbox" onChange={handleCheckboxChange} />
+                                            {user?.username}
 
-                                    </b>
-                                </label>
-                                {isLoginOpen && (
-                                    <ul className="submenuUser">
-                                        <form className='login' >
-                                            <div className="form-group">
-                                                <li><button href="/Profile" ><b className='menu'>Perfil</b></button></li><br></br>
-                                                <li><button href="/" onClick={() => { logout() }}><b className='menu'>Logout</b></button></li>
-                                            </div>
-                                        </form>
-                                    </ul>
-                                )}
-                            </li>
+                                        </b>
+                                    </label>
+                                    {isLoginOpen && (
+                                        <ul className="submenuUser">
+                                            <form className='login' >
+                                                <div className="form-group">
+                                                    <li><button href="/" onClick={() => { logout() }}><b className='menu'>Logout</b></button></li>
+                                                </div>
+                                            </form>
+                                        </ul>
+                                    )}
+                                </li>
                             </>
                         ) : (
                             <>
+                                <li><a href="#"><b className='menu'>Inicio</b></a></li>
+                                <li><a href="#"><b className='menu'>Rutas</b></a></li>
+                                <li><a href='#'><b className='menu'>Contacto</b></a></li>
                                 <li>
                                     <label className='labelcheck' htmlFor="menuCheckbox">
                                         <b className='menu'>
@@ -96,7 +107,7 @@ function NavBar() {
                                             {showInitialFields && (
                                                 <form className='login' onSubmit={handleSubmit(handleLoginSubmit)} >
                                                     <div>
-                                                        <div className="form-group">
+                                                        <div className="form-group-login">
                                                             <label htmlFor="username"><b className='formulario'>Nombre Usuario</b></label>
                                                             <input type="text" {...register('username', { required: true })} />
                                                             {
@@ -107,7 +118,7 @@ function NavBar() {
                                                                 )
                                                             }
                                                         </div>
-                                                        <div className="form-group">
+                                                        <div className="form-group-login">
                                                             <label htmlFor="password"><b className='formulario'>Contraseña</b></label>
                                                             <input type="password" {...register('password', { required: true })} />
                                                             {
@@ -119,7 +130,7 @@ function NavBar() {
 
                                                             }
                                                         </div>
-                                                        <div className="form-group">
+                                                        <div className="form-group-login">
                                                             <button className="button" type='submit'><b className='botones'>Entrar</b></button>&nbsp;&nbsp;&nbsp;
                                                             <button onClick={handleRegisterClick} className="button"><b className='botones'>Registrar</b></button>
                                                         </div>
@@ -143,7 +154,7 @@ function NavBar() {
                                                 <form className='login' onSubmit={handleSubmit(handleRegisterSubmit)} >
                                                     <div>
                                                         <div>
-                                                            <div className="form-group">
+                                                            <div className="form-group-register">
                                                                 <label htmlFor="username"><b className='formulario'>Nombre Usuario</b></label>
                                                                 <input type="text" {...register('username', { required: true })} />
                                                                 {
@@ -154,7 +165,7 @@ function NavBar() {
                                                                     )
                                                                 }
                                                             </div>
-                                                            <div className="form-group">
+                                                            <div className="form-group-register">
                                                                 <label htmlFor="password"><b className='formulario'>Contraseña</b></label>
                                                                 <input type="password" {...register('password', { required: true })} />
                                                                 {
@@ -166,7 +177,7 @@ function NavBar() {
                                                                 }
                                                             </div>
                                                         </div>
-                                                        <div className="form-group">
+                                                        <div className="form-group-register">
                                                             <label htmlFor="telefono"><b className='formulario'>Telefono</b></label>
                                                             <input type="phone" {...register('telefono', { required: true })} />
                                                             {
@@ -177,9 +188,10 @@ function NavBar() {
                                                                 )
                                                             }
                                                         </div>
-                                                        <div className="form-group">
+                                                        <div className="form-group-register">
                                                             <label htmlFor="correo"><b className='formulario'>Correo</b></label>
                                                             <input type="email" {...register('correo', { required: true })} />
+                                                            <input value={"cliente"} hidden {...register('tipoUser', { required: true })} />
                                                             {
                                                                 errors.correo && (
                                                                     <p className='text-red-500'>
@@ -188,7 +200,7 @@ function NavBar() {
                                                                 )
                                                             }
                                                         </div>
-                                                        <div className="form-group">
+                                                        <div className="form-group-register">
                                                             <button className="button" type='submit'><b className='botones'>Registrar</b></button>&nbsp;&nbsp;&nbsp;
                                                             <button onClick={handleCancel} className="button"><b className='botones'>Cancelar</b></button>
                                                         </div>

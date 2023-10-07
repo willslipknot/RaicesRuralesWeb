@@ -27,6 +27,8 @@
     margin-bottom: 20px;
     text-align: center; 
     font-size: medium;
+    color: white
+
 }
 
 .perfil{
@@ -55,6 +57,7 @@ h1{
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    text-align: center;
 }
 
 /* Cambio el color del texto de los botones a blanco */

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { registerRequest, loginRequest, verifyTokenRequest } from '../api/auth.js'
+import { registerRequest, loginRequest, verifyTokenRequest, updateUserRequest } from '../api/auth.js'
 import Cookies from 'js-cookie'
 
 const AuthContext = createContext();
@@ -47,6 +47,11 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
         setUser(null)
     })
+
+    const updateUser = async(id, user) =>{
+        const res = await updateUserRequest(id, user)
+     }
+ 
 
     useEffect(() => {
         if (errors.length > 0) {
@@ -97,6 +102,7 @@ export const AuthProvider = ({ children }) => {
                 errors,
                 loading,
                 logout,
+                updateUser,
             }}
         > {children}
         </AuthContext.Provider>

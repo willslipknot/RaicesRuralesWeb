@@ -7,7 +7,7 @@ import { TOKEN_SECRET } from '../config.js';
 
 
 export const register = async (req, res) => {
-  const { nombre, apellido, telefono, correo, username, password } = req.body;
+  const { nombre, apellido, telefono, correo, username, password, tipoUser } = req.body;
 
   try {
     const existingUser = await User.findOne({
@@ -31,6 +31,7 @@ export const register = async (req, res) => {
       correo,
       username,
       password: passwordHash,
+      tipoUser,
     });
 
     console.log("Usuario creado");
@@ -73,7 +74,7 @@ export const login = async (req, res) => {
       apellido: existingUser.apellido,
       correo: existingUser.correo,
       telefono: existingUser.telefono,
-      usernam: existingUser.username,
+      username: existingUser.username,
     });
 
   } catch (error) {
@@ -101,14 +102,32 @@ export const profile = async (req, res) => {
 
     return res.json({
       id: userFound.id,
+      username: userFound.username,
       nombre: userFound.nombre,
       apellido: userFound.apellido,
       correo: userFound.correo,
-      telefono: userFound.telefono
+      telefono: userFound.telefono,
+      tipoUser: userFound.tipoUser,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+export const putUser = async (req, res) => {
+  try {
+      const userFound = await User.findByPk(req.params.id);
+      if (!userFound) {
+          return res.status(404).json(["No se encontró el usuario, por lo que no se actualizó nada"]);
+      }
+
+      await userFound.update(req.body);
+      const updatedUser = await User.findByPk(req.params.id); 
+      res.json(updatedUser);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json(["Error interno del servidor"]);
   }
 };
 
@@ -129,7 +148,8 @@ export const verifyToken = async (req, res) => {
       telefono: userFound.telefono,
       nombre: userFound.nombre,
       apellido: userFound.apellido,
-      userna: userFound.username
+      tipoUser: userFound.tipoUser,
+
     })
 
   })

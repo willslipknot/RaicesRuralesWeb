@@ -31,6 +31,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
     }, 
+    tipoUser: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        }, 
     },
   {
     schema: 'usuarios',
