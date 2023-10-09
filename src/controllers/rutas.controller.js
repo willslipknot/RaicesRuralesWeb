@@ -1,4 +1,6 @@
+import path from 'path'
 import Actividad from "../models/rutas.models.js"
+
 
 
 export const getActs = async (req, res) => {
@@ -13,22 +15,32 @@ export const getAct = async (req, res) => {
 }
 
 export const createAct = async (req, res) => {
-    const { nombre, direccion, descripcion, tipo, imagen } = req.body
-    const newActividad = await Actividad.create({
+    const { nombre, direccion, descripcion, tipo } = req.body;
+    const { filename: imagen } = req.file;
 
-        nombre,
-        direccion,
-        tipo,
-        descripcion,
-        imagen
+    if (!imagen) {
+        return res.status(400).json(["Debes subir una imagen"]);
+    }
 
-    });
+    try {
+        
+        const newActividad = await Actividad.create({
+            nombre,
+            direccion,
+            tipo,
+            descripcion,
+            imagen
+        });
 
-    console.log("Actividad creada correctamente");
-    res.json({ message: "Actividad creada correctamente" });
+        console.log("Actividad creada correctamente");
+        res.json({ message: "Actividad creada correctamente" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json(["Error interno del servidor"]);
+    }
+};
 
 
-}
 
 export const deleteAct = async (req, res) => {
     try {

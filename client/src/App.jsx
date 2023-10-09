@@ -4,31 +4,35 @@ import { AuthProvider } from '../src/context/authContext.jsx';
 import Home from './pages/Home.jsx';
 import Profile from './pages/Profile.jsx';
 import Actividades from './pages/Actividades.jsx';
+import Conductor from './pages/Conductor.jsx'
 import ProtectedRoute from './ProtectedRoute.jsx';
 import { ActProvider } from './context/actContext.jsx';
+import { CondProvider } from './context/condContext.jsx'
 import HomeUser from './pages/HomeUser.jsx';
+import HomeAdmin from './pages/HomeAdmin.jsx';
 import NavBar from './components/Home/NavBar.jsx';
-import ActCard from './components/UserLog/ActCard.jsx';
+
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <ActProvider>
+        <CondProvider>
           <NavBar></NavBar>
           <Routes>
             <Route path="/" element={<Home />} />
 
             <Route element={<ProtectedRoute />}>
-
+              <Route path='/HomeAdmin' element={<HomeAdmin />} />
               <Route path='/HomeUser' element={<HomeUser />} />
               <Route path="/Profile" element={<Profile />} />
               <Route path="/Actividades" element={<Actividades />} />
-
-
-
+              <Route path="/Conductores" element={<Conductor />} />
+              
             </Route>
           </Routes>
+          </CondProvider>
         </ActProvider>
       </AuthProvider>
     </Router>

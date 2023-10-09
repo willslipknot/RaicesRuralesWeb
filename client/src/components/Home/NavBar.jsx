@@ -17,10 +17,16 @@ function NavBar() {
     const navigate = useNavigate();
 
     useEffect(() => {
+
+        if (isAuthenticated) {
+            if(user?.tipoUser === 'cliente'){
+                navigate('/HomeUser');
+        }}
         if (isLoginOpen ) {
             reset();
         }
-    }, [isLoginOpen, reset]);
+        
+    }, [isLoginOpen, reset, isAuthenticated, user]);
 
     const handleCheckboxChange = () => {
         setIsLoginOpen(!isLoginOpen);
@@ -36,11 +42,6 @@ function NavBar() {
         reset();
     };
 
-    const handleLoginSubmit = (values) => {
-        signin(values);
-
-    };
-
     const handleRegisterClick = () => {
         setIsFullFormVisible(true);
         setShowInitialFields(false);
@@ -53,12 +54,24 @@ function NavBar() {
     };
 
     const handleLogoClick = () => {
-        if (isAuthenticated) {
+        if (isAuthenticated && user.tipoUser === 'admin' ) {
+            navigate('/HomeAdmin');
+        } else if((isAuthenticated && user.tipoUser === 'cliente' )) {
             navigate('/HomeUser');
-        } else {
+        }else{
             navigate('/');
         }
     };
+
+    const handleLoginSubmit = async (values) => {
+        try {
+            await signin(values);
+          
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+        }
+    };
+    
 
     return (
         <div className="nav">
@@ -66,10 +79,10 @@ function NavBar() {
                 <ul className="navLis">
                 <div className='logo' onClick={handleLogoClick} />
                     {isAuthenticated ?
-                        (
-                            <>
+                        ( user?.tipoUser == 'admin' ? (
+                            <> 
                                 <li><a href="Actividades"><b className='menu'>Actividades</b></a></li>
-                                <li><a href='#'><b className='menu'>Conductores</b></a></li>
+                                <li><a href='Conductores'><b className='menu'>Conductores</b></a></li>
                                 <li><a href="Profile"><b className='menu'>Perfil</b></a></li>
                                 <li>
                                     <label className='labelcheck' htmlFor="menuCheckbox">
@@ -89,7 +102,29 @@ function NavBar() {
                                         </ul>
                                     )}
                                 </li>
-                            </>
+                            </> ):( <> 
+                                <li><a href="Actividades"><b className='menu'>Inicio</b></a></li>
+                                <li><a href='#'><b className='menu'>Rutas</b></a></li>
+                                <li><a href="Profile"><b className='menu'>Perfil</b></a></li>
+                                <li>
+                                    <label className='labelcheck' htmlFor="menuCheckbox">
+                                        <b className='menu'>
+                                            <input type="checkbox" className='check' id="menuCheckbox" onChange={handleCheckboxChange} />
+                                            {user?.username}
+
+                                        </b>
+                                    </label>
+                                    {isLoginOpen && (
+                                        <ul className="submenuUser">
+                                            <form className='login' >
+                                                <div className="form-group">
+                                                    <li><button href="/" onClick={() => { logout() }}><b className='menu'>Logout</b></button></li>
+                                                </div>
+                                            </form>
+                                        </ul>
+                                    )}
+                                </li>
+                            </>)
                         ) : (
                             <>
                                 <li><a href="#"><b className='menu'>Inicio</b></a></li>

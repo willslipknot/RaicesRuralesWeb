@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import '../../assets/css/ActCard.css';
-import imagen from "../../assets/images/encabezado3.jpg"
 import { useActs } from '../../context/actContext';
-
-
 
 const opciones = [
     { label: 'Estadia', value: 'Estadia' },
@@ -15,16 +12,17 @@ const opciones = [
 function ActCard({ act }) {
 
     const [modalOpen, setModalOpen] = useState(false);
-    const { deleteAct, getAct, updateAct } = useActs()
+    const { deleteAct, getAct, updateAct} = useActs()
     const [selectedId, setSelectedId] = useState(null);
     const { register, handleSubmit, reset,setValue } = useForm();
     const [tip, setTip] = useState('');
     const [imagenes, setImagenes] = useState(null);
     const [nombreArchivo, setNombreArchivo] = useState('');
     const [mensaje, setMensaje] = useState('');
+    const rutaImagen = `/images/${act.imagen}`;
 
     useEffect(() => {
-        if (selectedId !== null) { // Verificar si selectedId es válido
+        if (selectedId !== null) {
             async function loadAct() {  
                 const act = await getAct(selectedId);
                 console.log(act);
@@ -32,6 +30,7 @@ function ActCard({ act }) {
                 setValue('direccion', act.direccion);
                 setValue('descripcion', act.descripcion);
                 setValue('tipo', act.tipo);
+                setValue('imagen', act.imagen)
             }
             loadAct();
         }
@@ -55,7 +54,6 @@ function ActCard({ act }) {
             updateAct(selectedId, data)
         
         setMensaje('Actividad editada exitosamente');
-        reset();
         setNombreArchivo('');
         }
         setTimeout(() => {
@@ -81,12 +79,10 @@ function ActCard({ act }) {
         }
     };
 
-
-
     return (
         <div className="card">
             <div className='title'>
-                <img className='imagen_p1' src={imagen} alt=" " />
+                <img className='imagen_p1' src={rutaImagen} />
                 <div>
                     <h1>Nombre: {act.nombre}</h1>
                     <p>Tipo: {act.tipo}</p><br />

@@ -14,12 +14,12 @@ const opciones = [
 function Actividades() {
     const { register, handleSubmit, reset } = useForm();
     const { createActs, getActs, acts } = useActs();
-
     const [tip, setTip] = useState('');
-    const [imagen, setImagen] = useState(null);
+    const [file, setFile] = useState(null);
     const [nombreArchivo, setNombreArchivo] = useState('');
     const [mensaje, setMensaje] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
+    const BASE_URL = 'http://localhost:3001';
 
     const handleOpenModal = () => {
         setModalOpen(true);
@@ -34,19 +34,29 @@ function Actividades() {
     };
 
     const handleImagenChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImagen(file);
-            setNombreArchivo(file.name);
-        }
-    };
+        setFile(e.target.files[0])
+    }
 
     const onSubmit = handleSubmit((data) => {
+        if (!file) {
+            alert('Debes subir un archivo')
+            return
+        }
+
+        const formData = new FormData();
+        formData.append('nombre', data.nombre);
+        formData.append('direccion', data.direccion);
+        formData.append('descripcion', data.descripcion);
+        formData.append('tipo', data.tipo);
+        formData.append('imagen', file);
+
         console.log("Datos del formulario:", data);
-        createActs(data);
+        
+        createActs(formData);
+
         setMensaje('Actividad creada exitosamente');
         reset();
-        setNombreArchivo('');
+
 
         setTimeout(() => {
             setMensaje('');
@@ -56,7 +66,7 @@ function Actividades() {
     const handleLimpiarClick = () => {
         reset();
         setMensaje('');
-        setNombreArchivo('');
+
     };
 
     useEffect(() => {
@@ -79,26 +89,26 @@ function Actividades() {
                 {modalOpen && (
                     <div className="modal" onClick={handleCloseModal}>
                         <div className="actividad-form" onClick={(e) => e.stopPropagation()}>
-                            <form onSubmit={onSubmit} className='actividad'>
+                            <form onSubmit={onSubmit} className='actividad' >
 
                                 <div className="form-group">
                                     <label htmlFor="nombre">Nombre</label>
-                                    <input type="text" className='formulario' {...register("nombre" , {required:true})} />
+                                    <input type="text" className='formulario' {...register("nombre", { required: true })} />
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="direccion">Direccion</label>
-                                    <input type="text" className='formulario'  {...register("direccion" , {required:true}) } />
+                                    <input type="text" className='formulario'  {...register("direccion", { required: true })} />
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="descripcion">Descripcion</label>
-                                    <textarea className="area" rows="3" {...register("descripcion", {required:true})} ></textarea>
+                                    <textarea className="area" rows="3" {...register("descripcion", { required: true })} ></textarea>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="tipo">Tipo</label>&nbsp;&nbsp;
-                                    <select {...register('tipo', {required:true})} onChange={handleTipoChange} type="text" className='formulario-tipo' >
+                                    <select {...register('tipo', { required: true })} onChange={handleTipoChange} type="text" className='formulario-tipo' >
                                         <option value="">Selecciona un tipo</option>
                                         {opciones.map((opcion) => (
                                             <option key={opcion.value} value={opcion.value}>
@@ -109,7 +119,7 @@ function Actividades() {
                                 </div>
 
                                 <div className="form-group-image">
-                                    <input type="file" onChange={handleImagenChange} className='formulario1' />
+                                    <input id='inputFile' type="file" onChange={handleImagenChange} className='formulario1' />
                                     <input type="text" value={nombreArchivo} hidden className='formulario' {...register("imagen")} />
                                 </div>
 

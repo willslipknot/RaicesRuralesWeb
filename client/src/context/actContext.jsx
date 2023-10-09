@@ -29,6 +29,18 @@ export function ActProvider({ children }) {
 
     }
 
+    const getimg = async () => {
+        try {
+            const res = await getimgRequest();
+            setActs(res.data.image)
+            console.log(res)
+
+        } catch (error) {
+            console.error(error)
+        }
+
+    }
+
     const createActs = async (act) => {
         const res = await createActRequest(act)
         console.log(res)
@@ -50,9 +62,24 @@ export function ActProvider({ children }) {
         return res.data
     }
 
-    const updateAct = async(id, act) =>{
-       const res = await updateActRequest(id, act)
-    }
+    const updateAct = async (id, act) => {
+        try {
+            const res = await updateActRequest(id, act);
+            if (res.status === 200) {
+                setActs(prevActs => {
+                    return prevActs.map(prevAct => {
+                        if (prevAct.id === id) {
+                            return { ...prevAct, ...act };
+                        }
+                        return prevAct;
+                    });
+                });
+            }
+            console.log(res);
+        } catch (error) {
+            console.error('Error al actualizar la condición:', error);
+        }
+    };
 
     return (
         <ActContext.Provider value={{
@@ -62,6 +89,7 @@ export function ActProvider({ children }) {
             deleteAct,
             getAct,
             updateAct,
+            getimg
 
         }}>
             {children}
