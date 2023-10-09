@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import '../../assets/css/ActCard.css';
-import { useActs } from '../../context/actContext';
+import { useActs } from '../../context/actContext'; 
 
 const opciones = [
     { label: 'Estadia', value: 'Estadia' },
@@ -19,7 +19,7 @@ function ActCard({ act }) {
     const [imagenes, setImagenes] = useState(null);
     const [nombreArchivo, setNombreArchivo] = useState('');
     const [mensaje, setMensaje] = useState('');
-    const rutaImagen = `/images/${act.imagen}`;
+    
 
     useEffect(() => {
         if (selectedId !== null) {
@@ -36,7 +36,7 @@ function ActCard({ act }) {
         }
     }, [selectedId]);
     
-
+    const rutaImagen = '/src/assets/images/'+ act.imagen;
 
     const handleOpenModal = () => {
         setSelectedId(act.id);
@@ -82,7 +82,7 @@ function ActCard({ act }) {
     return (
         <div className="card">
             <div className='title'>
-                <img className='imagen_p1' src={rutaImagen} />
+                <img className='imagen_p1' src={rutaImagen} alt="Imagen" />
                 <div>
                     <h1>Nombre: {act.nombre}</h1>
                     <p>Tipo: {act.tipo}</p><br />
