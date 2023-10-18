@@ -11,6 +11,7 @@ import { CondProvider } from './context/condContext.jsx'
 import HomeUser from './pages/HomeUser.jsx';
 import HomeAdmin from './pages/HomeAdmin.jsx';
 import NavBar from './components/Home/NavBar.jsx';
+import Footer from './components/Home/Footer.jsx';
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
               
             </Route>
           </Routes>
+          <Footer></Footer>
           </CondProvider>
         </ActProvider>
       </AuthProvider>
